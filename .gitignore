@@ -1,3 +1,5 @@
 .env
 node_modules
-.gitkeep
+Uploads/*
+!Uploads/.gitkeep
+.gitignore

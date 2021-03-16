@@ -102,6 +102,9 @@ connectDB();
 
 app.use('/api/files', require('./Routes/files'));
 app.use('/files',require('./Routes/show'));
+// Route for starting the download --> After this we have to make download.js file in the Routes folder.
+app.use('/files/download', require('./Routes/download'));
+
 
 app.use(express.static('Public'));
 

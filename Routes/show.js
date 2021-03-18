@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const File = require('../Models/file');
 
+
 // Colon inidicates that this parameter is dynamic and will be different for each file.
 router.get('/:uuid', async (req,res) => {
     try{
@@ -12,7 +13,7 @@ router.get('/:uuid', async (req,res) => {
         const file = await File.findOne({uuid: req.params.uuid});
         if(!file){
             // If no file is found (maybe because of false uuid or link expired) then go to the download page and send that link has been expired.
-            return res.render('download', {error: 'Link has been expired.'});
+            return res.render('download', {error: 'Sorry, Link has been expired.'});
         }
         // Else if file is found then download page is rendered again but this time send response.
         return res.render('download',{
@@ -21,8 +22,8 @@ router.get('/:uuid', async (req,res) => {
             fileName: file.filename,
             fileSize: file.size,
             // This is the original download link clicking on which the file will be downloaded. This will attached to the download button.
-            downloadLink: `${process.env.APP_BASE_URL}/files/download/${file.uuid}`
-            // http://localhost:8000.files/download/sdhjslfdk-asdfhaslkdjf  --> This is the demo link, to show how our download link will look like.
+            downloadLink: `${process.env.APP_BASE_URL}/files/download/${file.uuid}`,
+            // http://localhost:8000/files/download/sdhjslfdk-asdfhaslkdjf  --> This is the demo link, to show how our download link will look like.
         })
     }catch(err){
         /*

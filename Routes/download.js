@@ -8,10 +8,11 @@ const File = require('../Models/file');
 */
 
 router.get('/:uuid', async(req,res)=>{
-    // First we have to check if the file is present in the DB or not.
+    // First we have to check if the file is present in the DB or not. Save the result in the file variable.
     const file = await File.findOne({uuid: req.params.uuid});
-    if(!File){
-        return res.render('download', {error: 'Link has been expired.'})
+    if(!file){
+        // If file is not present then on this page show this error.
+        return res.render('download', {error: 'Uhh ho! Link has been expired.'})
     }
 
 
@@ -22,3 +23,16 @@ router.get('/:uuid', async(req,res)=>{
 
 
 module.exports = router;
+
+/* 
+    Now, download is happening and we have handled what to do if file is not there.
+
+    Now, the next step is Sending file via email.
+
+    Thus, now we will make a post request again.
+    And we will be making a route to send this file via email.
+
+    This route will be created in the file.js file in the Routes
+    Because the route will be same i.e. api/files/ and then will make a new post request with
+    /send route inside the files.js file.
+*/

@@ -195,5 +195,90 @@ router.post('/', (req, res)=>{
 
 */
 
+router.post('/send', async (req,res)=>{
+
+    // This is for testing.
+    // console.log(req.body);
+    // return res.send({});
+    
+    /* 
+        First validating request.
+        And to validate let's first see what is the request that the server will be receiving.
+        Server will be receiving a json Formatted file, which will have the uuid of the file, along with
+        the emailTo and the emailFrom keys.
+
+        We have to validate the emailTo for sending email and if the emailFrom field is wrong, hardly matters.
+
+    */
+    // Using Object destructuring.    
+    const { uuid, emailTo, emailFrom} = req.body;
+    if(!uuid && !emailTo && !emailFrom){
+        // If any of the fields is missing then we have to log a validation error. Which goes with status 422.
+        return res.status(422).send({error: 'All fields are required.'});
+    }
+
+
+    /* 
+        Get data from database if all the fields are present.
+    */
+    const file = await File.findOne({uuid: uuid});
+
+    /*  
+        For each file this sender and receiver field is generated and by default is not required.
+        This sender field by default is set false, but once this field is populated then we don't want to send the
+        file again and again to the receiver.
+
+        Because this will tell that the file has a sender attached to it thus, this means we would have sent the email some time
+        before.
+    */
+    if(file.sender){
+        return res.status(422).send({error: 'Email already sent.'});
+    }
+
+    // Assigning the variables received from the JSON received and sending it to the file values, to be saved into the DB.
+    file.sender = emailFrom;
+    file.receiver = emailTo;
+    /* 
+        As this is the new data thus, we have to save this file data and save it to response to send it.
+    */
+    const response = await file.save(); 
+
+
+    /* 
+
+        Now we have to send the email.
+
+        We could have done it here but its functionality is totally different then we have to make a new module to send file via mail
+        and will import it here.
+
+        We will thus, now make a folder named services, that will constitue the services that our application will be using.
+        Email service is one of it.
+
+        To send the email we will be using nodeMailer package.
+        Thus, installing this package.    
+    */
+
+    const sendMail = require('../Services/emailService');
+    sendMail({
+        from: emailFrom,
+        to: emailTo,
+        subject: 'ShareOn file sharing',
+        text: `${emailFrom} shared a file with you.`,
+        // In here we will send the html file template for file sharing, 
+        // Thus will be making it as another service named emailTemplate and will import it here.
+        html: require('../Services/emailTemplate')({
+            // Calling the function here. We have to pass this object to the function.
+            emailFrom,
+            downloadLink: `${process.env.APP_BASE_URL}/files/${file.uuid}`,
+            size: parseInt(file.size/1000) + 'KB',
+            expires: '24 hours'
+        })
+
+        /* Now, back to the email service. And we have to configure the nodemailer service there. */
+    });
+
+    return res.send({success: true});
+});
+
 module.exports = router;
 //module.exports = initRoute;

@@ -29,7 +29,7 @@ const app = express();
     Assigns setting name to value.
 */
 app.set('view engine', 'ejs');
-app.set('Views', path.join(__dirname, '/Views'));
+app.set('views', path.join(__dirname, '/Views'));
 
 
 
@@ -37,6 +37,9 @@ app.set('Views', path.join(__dirname, '/Views'));
 // Creating a port first
 const PORT = process.env.PORT || 8000; // Will check if our env variable has the port, if not then take the port 3000
 
+
+app.use(express.json());
+// This line of code tells express to parse json data as file format.
 
 /* 
 
@@ -116,8 +119,6 @@ app.use(express.static('Public'));
 */
 
 // initRoute(app);
-
-
 
 
 /* 

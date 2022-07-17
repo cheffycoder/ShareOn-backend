@@ -1,7 +1,8 @@
 require('dotenv').config();
 const path = require('path');
+const cors = require('cors');
 
-/* 
+/*
     Below 2 lines
     Creates an Express application. 
     The express() function is a top-level function exported by the express module.
@@ -20,7 +21,6 @@ const app = express();
     3.   Rendering HTML views; see app.render.
     4.   Registering a template engine; see app.engine.
 */
-
 
 /*  
     This line of code comes real later when we have to render the download page.
@@ -66,6 +66,22 @@ app.use(express.json());
 const connectDB = require('./Config/db'); // As we have exported a function from the db.js file thus we have it stored inside the variable.
 connectDB();
 
+
+/* 
+    Setting up corsOptions.
+
+    First option is Origin:
+    Here you will define the available origins from where request to the server can be made.
+*/
+
+const corsOptions = {
+    origin: process.env.ALLOWED_CLIENTS.split(',')
+    // ['http://localhost:3000', 'http://localhost:5000', 'http://localhost:3030']
+}
+
+// Initializing cors middleware
+app.use(cors(corsOptions));
+
 /*  
 
     Now, we have to make API's i.e. endpoints so that the frontEnd can call the API and send the request and data to our server.
@@ -103,12 +119,22 @@ connectDB();
     By default, Express will require() the engine based on the file extension.
 */
 
+//  Hitting Base route to tell server is up and running
+app.get('/', (req, res)=>{
+    res.json({success: 'Up and running.'})
+});
+
 app.use('/api/files', require('./Routes/files'));
 app.use('/files',require('./Routes/show'));
 // Route for starting the download --> After this we have to make download.js file in the Routes folder.
 app.use('/files/download', require('./Routes/download'));
 
 
+
+/* 
+    This below is used To serve static files such as images, CSS files, and JavaScript files, 
+    use the express.static built-in middleware function in Express.
+*/
 app.use(express.static('Public'));
 
 /*  

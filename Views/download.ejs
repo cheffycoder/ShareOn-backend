@@ -14,19 +14,27 @@
 
     <section class="download">
         <img class="download__icon" src="/img/download-sd.svg" alt="shareOn-download">
+        <!-- We could have accessed as error or locals.error for getting the data passed by the render field. So, if error is passed then show this 
+            else render the page -->
         <% if(locals.error){ %>
-        <h4><%= locals.error %> 😏</h4>
-        <% } else { %>
-        <h2>Your file is ready to download</h2>
-        <p>Link expires in 24 hours</p>
-        <div class="download__meta">
-            <h4><%= fileName %></h4>
-            <small><%= parseInt(fileSize/1000) %> KB</small>
-        </div>
-        <div class="send-btn-container">
-            <a href="<%= downloadLink %>">Download file</a>
-        </div>
-        <% } %>
+            <h4>
+                <%= locals.error %> 😏
+            </h4>
+            <% } else { %>
+                <h2>Your file is ready to download</h2>
+                <p>Link expires in 24 hours</p>
+                <div class="download__meta">
+                    <h4>
+                        <%= fileName %>
+                    </h4>
+                    <small>
+                        <%= parseInt(fileSize/1000) %> KB
+                    </small>
+                </div>
+                <div class="send-btn-container">
+                    <a href="<%= downloadLink %>">Download file</a>
+                </div>
+                <% } %>
     </section>
 </body>
 
@@ -34,6 +42,8 @@
 
 
 <!-- 
+    The issue faced now is that, express is unable to find the static CSS folder, so no design was being passed to the page.
+    Thus, using another middleware we tell Express to pick our CSS static file from the Public folder
     After this download page is done we have to make this download button link work and start our download.
     Thus, for that we have to make a new route and declare it in the server.js file.
  -->

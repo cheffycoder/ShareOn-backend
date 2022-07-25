@@ -16,8 +16,8 @@
 
 */
 
-module.exports = ({emailFrom, downloadLink, size, expires}) => {
-    return `
+module.exports = ({ emailFrom, downloadLink, size, expires }) => {
+  return `
         <!doctype html>
             <html>
             <head>
@@ -182,6 +182,6 @@ module.exports = ({emailFrom, downloadLink, size, expires}) => {
             </body>
         </html>
     `;
-}
+};
 
 /* Email template is ready and now just import it there in the html key in the file.js post route */

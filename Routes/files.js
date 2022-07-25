@@ -1,14 +1,14 @@
-const router = require('express').Router();
+const router = require("express").Router();
 
-const multer = require('multer'); // This is installed to allow the download functionality.
+const multer = require("multer"); // This is installed to allow the download functionality.
 
-const path = require('path'); // This is an inbuilt module of nodeJS. It has many uses. Here in this we will use this to know the extension name of the file uploaded to the server. 
+const path = require("path"); // This is an inbuilt module of nodeJS. It has many uses. Here in this we will use this to know the extension name of the file uploaded to the server.
 
-const File = require('../Models/file');
+const File = require("../Models/file");
 
 // const {v4: uuid4 } = require('uuid');
 
-const { v4: uuidv4 } = require('uuid');
+const { v4: uuidv4 } = require("uuid");
 
 /* 
 
@@ -30,14 +30,16 @@ Here we will making a storage object with the help of diskStorage function of mu
 */
 
 let storage = multer.diskStorage({
-    destination: (req, file, cb) => cb(null, 'Uploads/'),
-    filename: (req,file,cb) => {
-        const uniqueName = `${Date.now()}-${Math.round(Math.random()*1E9)}${path.extname(file.originalname)}`;
-        // 234276482643-236589235.jpg  --> This is the generated unique file name
+  destination: (req, file, cb) => cb(null, "Uploads/"),
+  filename: (req, file, cb) => {
+    const uniqueName = `${Date.now()}-${Math.round(
+      Math.random() * 1e9
+    )}${path.extname(file.originalname)}`;
+    // 234276482643-236589235.jpg  --> This is the generated unique file name
 
-        cb(null, uniqueName);
-    }
-})
+    cb(null, uniqueName);
+  },
+});
 // Disk storage is ready now.
 
 /* 
@@ -61,12 +63,9 @@ let storage = multer.diskStorage({
 */
 
 let upload = multer({
-    storage, // This is same as storage: storage;
-    limit: {fileSize: 100*1000000}, // For now we made it 100mb
-}).single('myfile');
-
-
-
+  storage, // This is same as storage: storage;
+  limit: { fileSize: 100 * 1000000 }, // For now we made it 100mb
+}).single("myfile");
 
 /* 
 
@@ -98,7 +97,6 @@ let upload = multer({
     In order to store the file we will be requiring the multer library. Thus, installing it.
 */
 
-
 // We could have done it this way, by making a function and called it in app.use directly instead of making another route.
 
 // const initRoute = (app)=>{
@@ -109,16 +107,16 @@ let upload = multer({
 //             if(!req.file){
 //                 return res.json({error: 'All fields are required.'})
 //             }
-    
+
 //             if(err){
 //                 return res.status(500).send({error: err.message})
 //             }
-    
-//             /* 
-            
+
+//             /*
+
 //                 Now if there is no error in uploading then we will create a file object
 //                 based on the schema defined in the DB.
-            
+
 //             */
 //             const file = new File({
 //                 filename: req.file.filename,
@@ -126,7 +124,7 @@ let upload = multer({
 //                 path: req.file.path,
 //                 size: req.file.size
 //             });
-    
+
 //             const response = await file.save();
 //             return res.json({file: `${process.env.APP_BASE_URL}/files/123`});
 //             // http://localhost:3000/files/234123shfkljasf-2e1243jlksjf  --> This would be download link and using this the client will be sent to another page where he will get the real file to download.
@@ -134,11 +132,8 @@ let upload = multer({
 //     })
 // }
 
-
-
-router.post('/', (req, res)=>{
-    
-    /* 
+router.post("/", (req, res) => {
+  /* 
         To upload the file, first we pass 3 arguments in the upload function.  
         But to store in the DB we would require model. Thus, we created a models folder
         and made a new file file.js
@@ -151,36 +146,35 @@ router.post('/', (req, res)=>{
         We will pass an object inside this schema and this will be the blueprint of how will the document look inside the DB.
         Thus, we have to define the fields that we would need in the DB.
     */
-    upload(req, res, async (err)=>{
+  upload(req, res, async (err) => {
+    /* Validating the request and sending a JSON response in case there is no file attached to the request. */
+    if (!req.file) {
+      return res.json({ error: "All fields are required." });
+    }
 
-        /* Validating the request and sending a JSON response in case there is no file attached to the request. */
-        if(!req.file){
-            return res.json({error: 'All fields are required.'})
-        }
+    if (err) {
+      return res.status(500).send({ error: err.message });
+    }
 
-        if(err){
-            return res.status(500).send({error: err.message})
-        }
+    /* 
+        Now if there is no error in uploading then we will create a file object
+        based on the schema defined in the DB.
+    */
+    const file = new File({
+      filename: req.file.filename,
+      uuid: uuidv4(),
+      path: req.file.path,
+      size: req.file.size,
+    });
 
-        /* 
-        
-            Now if there is no error in uploading then we will create a file object
-            based on the schema defined in the DB.
-        
-        */
-        const file = new File({
-            filename: req.file.filename,
-            uuid: uuidv4(),
-            path: req.file.path,
-            size: req.file.size
-        });
-
-        const response = await file.save();
-        return res.json({file: `${process.env.APP_BASE_URL}/files/${response.uuid}`});
-        // http://localhost:3000/files/234123shfkljasf-2e1243jlksjf  --> This would be download link and using this the client will be sent to another page where he will get the real file to download.
-    })
+    const response = await file.save();
+    return res.json({
+      file: `${process.env.APP_BASE_URL}/files/${response.uuid}`,
+    });
+    // http://localhost:3000/files/234123shfkljasf-2e1243jlksjf  --> This would be download link and using this the client will be sent to another page where he will get the real file to download.
+    // Thus, this is not the download link, but link to the page where file will be ready to download.
+  });
 });
-
 
 /* 
     This posted file will now be saved to our localStorage path defined as Uploads and the response
@@ -195,13 +189,12 @@ router.post('/', (req, res)=>{
 
 */
 
-router.post('/send', async (req,res)=>{
+router.post("/send", async (req, res) => {
+  // This is for testing.
+  // console.log(req.body);
+  // return res.send({});
 
-    // This is for testing.
-    // console.log(req.body);
-    // return res.send({});
-    
-    /* 
+  /* 
         First validating request.
         And to validate let's first see what is the request that the server will be receiving.
         Server will be receiving a json Formatted file, which will have the uuid of the file, along with
@@ -210,20 +203,19 @@ router.post('/send', async (req,res)=>{
         We have to validate the emailTo for sending email and if the emailFrom field is wrong, hardly matters.
 
     */
-    // Using Object destructuring.    
-    const { uuid, emailTo, emailFrom} = req.body;
-    if(!uuid && !emailTo && !emailFrom){
-        // If any of the fields is missing then we have to log a validation error. Which goes with status 422.
-        return res.status(422).send({error: 'All fields are required.'});
-    }
+  // Using Object destructuring.
+  const { uuid, emailTo, emailFrom } = req.body;
+  if (!uuid && !emailTo && !emailFrom) {
+    // If any of the fields is missing then we have to log a validation error. Which goes with status 422.
+    return res.status(422).send({ error: "All fields are required." });
+  }
 
-
-    /* 
+  /* 
         Get data from database if all the fields are present.
     */
-    const file = await File.findOne({uuid: uuid});
+  const file = await File.findOne({ uuid: uuid });
 
-    /*  
+  /*  
         For each file this sender and receiver field is generated and by default is not required.
         This sender field by default is set false, but once this field is populated then we don't want to send the
         file again and again to the receiver.
@@ -231,20 +223,21 @@ router.post('/send', async (req,res)=>{
         Because this will tell that the file has a sender attached to it thus, this means we would have sent the email some time
         before.
     */
-    if(file.sender){
-        return res.status(422).send({error: 'Email already sent.'});
-    }
+  if (file.sender) {
+    return res.status(422).send({ error: "Email already sent." });
+  }
 
-    // Assigning the variables received from the JSON received and sending it to the file values, to be saved into the DB.
-    file.sender = emailFrom;
-    file.receiver = emailTo;
-    /* 
-        As this is the new data thus, we have to save this file data and save it to response to send it.
-    */
-    const response = await file.save(); 
+  // Assigning the variables received from the JSON received and sending it to the file values, to be saved into the DB.
+  file.sender = emailFrom;
+  file.receiver = emailTo;
+  /**
+   * As now we are going to send and Email
+   * Thus saving the sender and receiver details in DB,
+   * We have to save this file data in DB with the new sender and receiver fields.
+   **/
+  const response = await file.save();
 
-
-    /* 
+  /* 
 
         Now we have to send the email.
 
@@ -258,26 +251,26 @@ router.post('/send', async (req,res)=>{
         Thus, installing this package.    
     */
 
-    const sendMail = require('../Services/emailService');
-    sendMail({
-        from: emailFrom,
-        to: emailTo,
-        subject: 'ShareOn file sharing',
-        text: `${emailFrom} shared a file with you.`,
-        // In here we will send the html file template for file sharing, 
-        // Thus will be making it as another service named emailTemplate and will import it here.
-        html: require('../Services/emailTemplate')({
-            // Calling the function here. We have to pass this object to the function.
-            emailFrom,
-            downloadLink: `${process.env.APP_BASE_URL}/files/${file.uuid}`,
-            size: parseInt(file.size/1000) + 'KB',
-            expires: '24 hours'
-        })
+  const sendMail = require("../Services/emailService");
+  sendMail({
+    from: emailFrom,
+    to: emailTo,
+    subject: "ShareOn file sharing",
+    text: `${emailFrom} shared a file with you.`,
+    // In here we will send the html file template for file sharing,
+    // Thus will be making it as another service named emailTemplate and will import it here.
+    html: require("../Services/emailTemplate")({
+      // Calling the function here. We have to pass this object to the function.
+      emailFrom,
+      downloadLink: `${process.env.APP_BASE_URL}/files/${file.uuid}`,
+      size: parseInt(file.size / 1000) + "KB",
+      expires: "24 hours",
+    }),
 
-        /* Now, back to the email service. And we have to configure the nodemailer service there. */
-    });
+    /* Now, back to the email service. And we have to configure the nodemailer service there. */
+  });
 
-    return res.send({success: true});
+  return res.send({ success: true });
 });
 
 module.exports = router;

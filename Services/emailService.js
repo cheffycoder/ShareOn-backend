@@ -1,4 +1,4 @@
-const nodemailer = require('nodemailer');
+const nodemailer = require("nodemailer");
 
 /* 
     Now, after importing
@@ -11,9 +11,8 @@ const nodemailer = require('nodemailer');
     Let's go to files.js in Routes to create a route.
 */
 
-async function sendMail({from, to, subject, text, html}){
-
-    /* 
+async function sendMail({ from, to, subject, text, html }) {
+  /* 
         Now, we have to do the config of node mailer.
         Creating a transporter object from nodemailer.createTransport();
         Inside createTransport function of nodemailer we have to create an object.
@@ -29,32 +28,31 @@ async function sendMail({from, to, subject, text, html}){
         And it will give us all the SMTP settings that we need.
     
     */
-    let transporter = nodemailer.createTransport({
-        host: process.env.SMTP_HOST,
-        port: process.env.SMTP_PORT,
-        secure: false,
-        auth: {
-            user: process.env.MAIL_USER,
-            pass: process.env.MAIL_PASS
-        }
-    });
+  let transporter = nodemailer.createTransport({
+    host: process.env.SMTP_HOST,
+    port: process.env.SMTP_PORT,
+    secure: true,
+    auth: {
+      user: process.env.MAIL_USER,
+      pass: process.env.MAIL_PASS,
+    },
+  });
 
-    
-    // Basic configuration is done and now we have to send the mail. Thus, making a variable.
-    /* This sendMail is a method provided to us by the nodemailer library. Our sendMail Function is different */
-    let info = await transporter.sendMail({
-        from: `ShareOn<${from}>`,
-        to,
-        subject,
-        text,
-        html,
-    });
+  // Basic configuration is done and now we have to send the mail. Thus, making a variable.
+  /* This sendMail is a method provided to us by the nodemailer library. Our sendMail Function is different */
+  let info = await transporter.sendMail({
+    from: `ShareOn<${from}>`,
+    to,
+    subject,
+    text,
+    html,
+  });
 
-    // console.log(info);
+  // console.log(info);
 
-    // An error is encountered which says cannot destructure property uuid of req.body as it is undefined
-    // This tells us that the req body is empty.
-    /* 
+  // An error is encountered which says cannot destructure property uuid of req.body as it is undefined
+  // This tells us that the req body is empty.
+  /* 
         Express server by default never expects JSON data format in requests body, 
         Thus, we have to explicitly tell express that the body is containing JSON data and please receive it.
         To do this we will enable JSON parse feature of express.
@@ -65,6 +63,5 @@ async function sendMail({from, to, subject, text, html}){
         This is a middleware of express that enables JSON data format to be readable by express server.
     */
 }
-
 
 module.exports = sendMail;

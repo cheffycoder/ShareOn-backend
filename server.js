@@ -1,12 +1,12 @@
-require('dotenv').config();
-const path = require('path');
+require("dotenv").config();
+const path = require("path");
 
 /* 
     Below 2 lines
     Creates an Express application. 
     The express() function is a top-level function exported by the express module.
 */
-const express = require('express');
+const express = require("express");
 const app = express();
 /* 
     Now app variable has the object express now.
@@ -21,22 +21,18 @@ const app = express();
     4.   Registering a template engine; see app.engine.
 */
 
-
 /*  
     This line of code comes real later when we have to render the download page.
     Template Engine:
     app.set(name, value)
     Assigns setting name to value.
 */
-app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, '/Views'));
-
-
+app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "/Views"));
 
 // Running this server on a port
 // Creating a port first
 const PORT = process.env.PORT || 8000; // Will check if our env variable has the port, if not then take the port 3000
-
 
 app.use(express.json());
 // This line of code tells express to parse json data as file format.
@@ -62,8 +58,7 @@ app.use(express.json());
 
 */
 
-
-const connectDB = require('./Config/db'); // As we have exported a function from the db.js file thus we have it stored inside the variable.
+const connectDB = require("./Config/db"); // As we have exported a function from the db.js file thus we have it stored inside the variable.
 connectDB();
 
 /*  
@@ -74,7 +69,7 @@ connectDB();
 
     Installed post man to check the api response.
 
-    This is a POST request and we gave the url and now we selected from-data.
+    This is a POST request and we gave the url and now we selected form-data.
     Key is taken as 'myfile' and file is selected. Then select the file you want to upload in the value input.
 
     And click send to test the response.
@@ -96,20 +91,18 @@ connectDB();
     Anything added beyond / will be interpreted like api/files/something.
 */
 
-
 /* 
     app.engine(ext, callback) -->
     This registers the given template engine callback as ext.
     By default, Express will require() the engine based on the file extension.
 */
 
-app.use('/api/files', require('./Routes/files'));
-app.use('/files',require('./Routes/show'));
+app.use("/api/files", require("./Routes/files"));
+app.use("/files", require("./Routes/show"));
 // Route for starting the download --> After this we have to make download.js file in the Routes folder.
-app.use('/files/download', require('./Routes/download'));
+app.use("/files/download", require("./Routes/download"));
 
-
-app.use(express.static('Public'));
+app.use(express.static("Public"));
 
 /*  
     This is a good way to check for post request directly, by sending response.
@@ -119,7 +112,6 @@ app.use(express.static('Public'));
 */
 
 // initRoute(app);
-
 
 /* 
     app.listen([port[, host[, backlog]]][, callback])   --->
@@ -142,9 +134,9 @@ app.use(express.static('Public'));
     https.createServer(options, app).listen(443)
 
 */
-app.listen(PORT, ()=>{
-    console.log(`Listening on port ${PORT}`);
-})
+app.listen(PORT, () => {
+  console.log(`Listening on port ${PORT}`);
+});
 
 /*
     To run the above made server we have to make some changes in the package.json file and make some scripts.

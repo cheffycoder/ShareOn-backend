@@ -1,19 +1,22 @@
-require('dotenv').config(); 
+require("dotenv").config();
 /*  
     This is used to access the env variables. 
     --> To access the env variables inside the .env file you use process.env.variableName 
         Like here for url we used process.env.MONGO_CONNECTION_URL
 */
 
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
+function connectDB() {
+  // Data base connection, the same snippet will be used for database connection everytime.
+  /* 
 
-function connectDB(){
-    // Data base connection, the same snippet will be used for database connection everytime.
-    /* 
-
-    mongoose.connect(url, {useNewUrlParser: true, useCreateIndex:true, useUnifiedTopology:true, 
-    useFindAndModify: true}); 
+    mongoose.connect(url, {
+        useNewUrlParser: true, 
+        useCreateIndex:true, 
+        useUnifiedTopology:true, 
+        useFindAndModify: true
+    }); 
 
     This url is the connection string that will be provided if we create cloud DB.
 
@@ -27,12 +30,16 @@ function connectDB(){
             Every secret information is saved in that file and later we can import it here.
     */
 
-    mongoose.connect(process.env.MONGO_CONNECTION_URL, {useNewUrlParser: true, useCreateIndex:true, useUnifiedTopology:true, 
-    useFindAndModify: true});
+  mongoose.connect(process.env.MONGO_CONNECTION_URL, {
+    useNewUrlParser: true,
+    useCreateIndex: true,
+    useUnifiedTopology: true,
+    useFindAndModify: true,
+  });
 
-    const connection = mongoose.connection;
+  const connection = mongoose.connection;
 
-    /* 
+  /* 
         As soon as our DB is connected this callback function inside the connection.once will run.
 
         i.e. It works exactly as event listeners.
@@ -42,14 +49,14 @@ function connectDB(){
 
         And finally we just export this whole module.
     */
-    connection.once('open', ()=>{
-        console.log('Database connected!')
-    }).catch(err=>{
-        console.log('Connection failed.')
+  connection
+    .once("open", () => {
+      console.log("Database connected!");
     })
-
+    .catch((err) => {
+      console.log("Connection failed.");
+    });
 }
-
 
 module.exports = connectDB;
 

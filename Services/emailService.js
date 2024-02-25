@@ -72,15 +72,17 @@ async function sendMail({ from, to, subject, text, html }) {
 
   // An error is encountered which says cannot destructure property uuid of req.body as it is undefined
   // This tells us that the req body is empty.
-  /* 
-    Express server by default never expects JSON data format in requests body, 
-    Thus, we have to explicitly tell express that the body is containing JSON data and please receive it.
-    To do this we will enable JSON parse feature of express.
-    Let's go to server.js and do
-    app.use(express.json());
-
-    This is a middleware of express that enables JSON data format to be readable by express server.
-  */
 }
 
 module.exports = sendMail;
+
+
+/* 
+  Express server by default never expects JSON data format in requests body, 
+  Thus, we have to explicitly tell express that the body is containing JSON data and please receive it.
+  To do this we will enable JSON parse feature of express.
+  Let's go to server.js and do
+  app.use(express.json());
+
+  This is a middleware of express that enables JSON data format to be readable by express server.
+*/
